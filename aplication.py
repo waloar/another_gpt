@@ -1,6 +1,9 @@
 
 import json
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 
 def OpenFile(file_path):
@@ -19,9 +22,6 @@ def save_file(data, filename, indent=4):
     try:
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(data)
-        algo = OpenFile(filename) 
-        elJson = json.loads(algo)
-        return elJson
         print(f"Data successfully saved to {filename}")
     except IOError as e:
         print(f"Error saving file {filename}: {e}")
@@ -29,10 +29,15 @@ def save_file(data, filename, indent=4):
         print(f"Error serializing data to JSON: {e}. Ensure all data types are JSON serializable.")
 
 
+env_path = os.path.join(os.path.dirname(__file__), 'deploy.env')
+load_dotenv(dotenv_path=env_path)
+
+OpenIAKey = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI()
 
 string_input = OpenFile("/Users/waltervodeb/Documents/Stanford/CoreNLP/docs/train_partes_walter_1.txt")
+
 
 response = client.responses.create(
   prompt={
@@ -49,8 +54,9 @@ response = client.responses.create(
 )
 
 if response:
+    resultado = json.loads(response.output_text)
+    print(resultado)
     save_file(response.output_text, "response_output.json")
 
-# print(response.output_text)
 
 
